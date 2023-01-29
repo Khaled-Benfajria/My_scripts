@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Author: Khaled Benfajria
-# Date:   29-01-2023
-# Name:   Installing MongoDB & MongoDB GUI powered by PHP
-# OS: 	  Ubuntu 20.04
+# Date Created: 29-01-2023
+
+# Description:
+# Installing MongoDB & MongoDB GUI powered by PHP on Ubuntu 20.04
 
 #######################################
 # Print a message in a given color.
-# Arguments:
-#   Color. eg: green, red
 #######################################
 function print_color(){
   NC='\033[0m' # No Color
@@ -17,7 +16,7 @@ function print_color(){
     "green") COLOR='\033[1;32m' ;;
     "red") COLOR='\033[1;31m' ;;
     "yellow") COLOR='\033[1;33m' ;;
-	"blue") COLOR='\033[1;34m' ;;
+    "blue") COLOR='\033[1;34m' ;;
   esac
 
   echo -e "${COLOR} $2 ${NC}"
@@ -37,7 +36,7 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 sudo systemctl start mongod
 
-# Installing apache2 & Activate rewrite module
+# Installing apache2 & Enable rewrite module
 # AllowOverride All in your Apache (virtual host) configuration.
 
 print_color "green" '-----Installing apache2 & Activate rewrite module-----'
