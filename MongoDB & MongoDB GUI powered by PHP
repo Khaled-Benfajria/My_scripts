@@ -3,6 +3,7 @@
 # Author: Khaled Benfajria
 # Date:   29-01-2023
 # Name:   Installing MongoDB & MongoDB GUI powered by PHP
+# OS: 	  Ubuntu 20.04
 
 #######################################
 # Print a message in a given color.
@@ -29,8 +30,7 @@ echo
 
 print_color "green" '-----Installing MongoDB-----'
 sudo apt-get update
-sudo apt-get install ca-certificates -y
-sudo apt-get install gnupg -y 
+sudo apt-get install ca-certificates gnupg -y
 sudo wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
 sudo echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 sudo apt-get update
@@ -42,8 +42,7 @@ sudo systemctl start mongod
 
 print_color "green" '-----Installing apache2 & Activate rewrite module-----'
 sudo apt-get install apache2 -y
-sudo systemctl start apache2
-sudo systemctl enable apache2
+sudo systemctl start apache2 && sudo systemctl enable apache2
 sudo a2enmod rewrite
 sudo sed -i 's/None/All/g' /etc/apache2/apache2.conf
 sudo sed -i 's+/var/www/html+/var/www/html/MongoDB-PHP-GUI+g' /etc/apache2/sites-enabled/000-default.conf
@@ -52,17 +51,14 @@ sudo systemctl relaod apache2
 # Installing php7.4 and Additional Dependencies
 
 print_color "green" '-----Installing php7.4 and Additional Dependencies-----'
-sudo apt-get install php libapache2-mod-php -y
-sudo apt-get install php7.4-dev -y
-sudo apt-get install php-pear -y
+sudo apt-get install php libapache2-mod-php php7.4-dev php-pear php-mongodb -y
 sudo pecl install mongodb-1.13.0
-sudo apt-get install php7.4-mongodb -y
 
 # Configuration MongoDB GUI
 
 # Clone Mongo-php-GUI repository
 
-print_color "-----green" '-----Configuration MongoDB GUI-----'
+print_color "green" '-----Configuration MongoDB GUI-----'
 print_color "blue" '-----Clone Mongo-php-GUI repository-----'
 sudo apt-get install git -y
 cd /var/www/html/ && sudo git clone https://github.com/Khaled-Benfajria/MongoDB-PHP-GUI.git
@@ -79,15 +75,11 @@ sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=compose
 
 # Do not use composer with sudo
 
-sudo usermod -a -G www-data $USER # This action require you to logout and login again.
-exec su -l $USER -c "id"  # Refresh the group membership without logout/login
-sudo chown root:root /var/www
-sudo chmod 755 /var/www/
-sudo chown -R www-data:www-data /var/www/html/MongoDB-PHP-GUI
-sudo chmod -R 774 /var/www/html/MongoDB-PHP-GUI
+sudo chown -R $USER:$USER /var/www/html/MongoDB-PHP-GUI
 
 # Run composer install at project's root directory to install all PHP dependencies.
 
 print_color "green" '-----Run composer install-----'
+cd /var/www/html/MongoDB-PHP-GUI
 composer install --ignore-platform-req=ext-mongodb
 sudo systemctl restart apache2 
