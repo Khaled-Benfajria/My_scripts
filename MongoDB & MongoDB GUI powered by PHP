@@ -82,3 +82,7 @@ print_color "green" '-----Run composer install-----'
 cd /var/www/html/MongoDB-PHP-GUI
 composer install --ignore-platform-req=ext-mongodb
 sudo systemctl restart apache2 
+
+#  If you want to query DB with SQL, you must have Java JDK installed.
+
+sudo apt-get install openjdk-11-jre
