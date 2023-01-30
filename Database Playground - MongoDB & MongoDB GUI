@@ -85,4 +85,4 @@ sudo systemctl restart apache2
 
 #  If you want to query DB with SQL, you must have Java JDK installed.
 
-sudo apt-get install openjdk-11-jre
+sudo apt-get install openjdk-11-jre -y
