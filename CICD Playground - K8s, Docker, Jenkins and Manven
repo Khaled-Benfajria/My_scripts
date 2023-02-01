@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Author: Khaled Benfajria
+# Date Created: 01-02-2023
+
+# Description:
+# Install Jenkins, Maven, Docker, Kubernetes (single node) on Ubuntu 20.04 
+
+ sudo apt update && sudo apt upgrade -y
+ sudo apt-get install ca-certificates gnupg2 software-properties-common git wget gnupg curl apt-transport-https -y
+ sudo apt install openjdk-11-jdk -y
+ wget -p -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+ sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+ sudo apt update
+ sudo apt install jenkins -y && sudo apt install maven -y
+ sudo sed -i 's/Environment="JENKINS_PORT=8080"/Environment="JENKINS_PORT=8081"/g' /usr/lib/systemd/system/jenkins.service
+ sudo systemctl daemon-reload && sudo systemctl restart jenkins
+ 
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt update
+sudo apt -y install vim git curl wget kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab && sudo swapoff -a
+sudo modprobe overlay && sudo modprobe br_netfilter
+sudo apt update
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y containerd.io docker-ce docker-ce-cli
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl daemon-reload && sudo systemctl restart docker && sudo systemctl enable docker
+sudo apt update
+VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
+wget https://github.com/Mirantis/cri-dockerd/releases/download/v${VER}/cri-dockerd-${VER}.amd64.tgz
+tar xvf cri-dockerd-${VER}.amd64.tgz
+sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
+wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
+wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
+sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
+sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+sudo systemctl daemon-reload && sudo systemctl enable cri-docker.service && sudo systemctl enable --now cri-docker.socket
+lsmod | grep br_netfilter
+sudo systemctl enable kubelet
+sudo kubeadm config images pull --cri-socket /run/cri-dockerd.sock 
+sudo kubeadm init \
+  --pod-network-cidr=192.168.0.0/16 \
+  --cri-socket unix:///run/cri-dockerd.sock 
+  ----ignore-preflight-errors=all
+mkdir -p $HOME/.kube
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl taint nodes $(hostname) node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml 
+kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
