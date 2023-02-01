@@ -4,7 +4,7 @@
 # Date Created: 01-02-2023
 
 # Description:
-# Install Jenkins, Maven, Docker, Kubernetes (single node) on Ubuntu 20.04 
+# Install latest version of Jenkins, Maven, Docker, Kubernetes (single node) on Ubuntu 20.04 
 
 # Install Jenkins && Maven
 
