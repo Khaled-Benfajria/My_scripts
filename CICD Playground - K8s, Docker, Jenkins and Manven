@@ -6,6 +6,8 @@
 # Description:
 # Install Jenkins, Maven, Docker, Kubernetes (single node) on Ubuntu 20.04 
 
+# Install Jenkins && Maven
+
  sudo apt update && sudo apt upgrade -y
  sudo apt-get install ca-certificates gnupg2 software-properties-common git wget gnupg curl apt-transport-https -y
  sudo apt install openjdk-11-jdk -y
@@ -16,6 +18,7 @@
  sudo sed -i 's/Environment="JENKINS_PORT=8080"/Environment="JENKINS_PORT=8081"/g' /usr/lib/systemd/system/jenkins.service
  sudo systemctl daemon-reload && sudo systemctl restart jenkins
  
+# Install Docker & Kubernetes
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -30,6 +33,7 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt update
 sudo apt install -y containerd.io docker-ce docker-ce-cli
 sudo mkdir -p /etc/systemd/system/docker.service.d
+
 sudo tee /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -40,6 +44,7 @@ sudo tee /etc/docker/daemon.json <<EOF
   "storage-driver": "overlay2"
 }
 EOF
+
 sudo systemctl daemon-reload && sudo systemctl restart docker && sudo systemctl enable docker
 sudo apt update
 VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
@@ -54,10 +59,12 @@ sudo systemctl daemon-reload && sudo systemctl enable cri-docker.service && sudo
 lsmod | grep br_netfilter
 sudo systemctl enable kubelet
 sudo kubeadm config images pull --cri-socket /run/cri-dockerd.sock 
+
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --cri-socket unix:///run/cri-dockerd.sock 
   ----ignore-preflight-errors=all
+  
 mkdir -p $HOME/.kube
 sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
