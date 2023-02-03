@@ -60,7 +60,7 @@ sudo pecl install mongodb-1.13.0
 print_color "green" '-----Configuration MongoDB GUI-----'
 print_color "blue" '-----Clone Mongo-php-GUI repository-----'
 sudo apt-get install git -y
-cd /var/www/html/ && sudo git clone https://github.com/Khaled-Benfajria/MongoDB-PHP-GUI.git
+cd /var/www/html/ && sudo git clone https://github.com/KhaledBenfajria/MongoDB-PHP-GUI.git
 sudo rm index.html && cd /var/www/html/MongoDB-PHP-GUI
 
 # Downloading and Installing Composer
