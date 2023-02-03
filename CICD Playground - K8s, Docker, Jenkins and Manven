@@ -63,7 +63,7 @@ sudo kubeadm config images pull --cri-socket /run/cri-dockerd.sock
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --cri-socket unix:///run/cri-dockerd.sock 
-  ----ignore-preflight-errors=all
+  --ignore-preflight-errors=all
   
 mkdir -p $HOME/.kube
 sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
