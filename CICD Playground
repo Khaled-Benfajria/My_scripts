@@ -4,7 +4,7 @@
 # Date Created: 01-02-2023
 
 # Description:
-# Install latest version of Jenkins, Maven, Docker, Kubernetes (single node) on Ubuntu 20.04 
+# Install latest version of Jenkins, Maven, SonarQube, Docker, Kubernetes (single node) on Ubuntu 20.04 
 
 # Install Jenkins && Maven
 
@@ -72,3 +72,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl taint nodes $(hostname) node-role.kubernetes.io/control-plane:NoSchedule-
 kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml 
 kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+
+# Install SonarQube
+
+docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAB_CHECKS_DISABLE=true -o 9000:9000 sonarqube:latest
