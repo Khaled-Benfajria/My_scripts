@@ -88,8 +88,9 @@ sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 kubectl taint nodes $(hostname) node-role.kubernetes.io/control-plane:NoSchedule-
-kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml 
-kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/tigera-operator.yaml 
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml -O
+kubectl create -f custom-resources.yaml
 
 # Install SonarQube
 print_color "green" '-----Install SonarQube-----'
