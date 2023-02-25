@@ -4,7 +4,7 @@
 # Date Created: 01-02-2023
 
 # Description:
-# Install latest version of Jenkins, Maven, SonarQube, Docker, Kubernetes (single node) on Ubuntu 20.04 
+# Install latest version of Jenkins, Maven, SonarQube,Nexus Repository, Docker, Kubernetes (single node) on Ubuntu 20.04 
 
 #######################################
 # Print a message in a given color.
