@@ -28,7 +28,7 @@ echo
 print_color "green" '-----Install Jenkins & Maven-----'
  sudo apt update && sudo apt upgrade -y
  sudo apt-get install ca-certificates gnupg2 software-properties-common git wget gnupg curl apt-transport-https -y
- sudo apt install openjdk-8-jdk openjdk-8-jre -y
+ sudo apt install openjdk-11-jdk -y
  wget -p -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
  sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
  sudo apt update
@@ -94,10 +94,12 @@ kubectl create -f custom-resources.yaml
 
 # Install SonarQube
 print_color "green" '-----Install SonarQube-----'
-docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAB_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
+sudo docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAB_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 
 # Install Nexus Repository
 print_color "green" '-----Install Nexus Repository-----'
+sudo apt install openjdk-8-jdk -y
+INSTALL4J_JAVA_HOME_OVERRIDE=/usr/lib/jvm/openjdk-8
 cd /opt && sudo wget https://download.sonatype.com/nexus/3/nexus-3.47.1-01-unix.tar.gz
 sudo tar -zxvf nexus-3.47.1-01-unix.tar.gz && sudo rm -f nexus-3.47.1-01-unix.tar.gz
 sudo chown $USER:$USER -R nexus-3.47.1-01/ && sudo chown $USER:$USER -R sonatype-work
