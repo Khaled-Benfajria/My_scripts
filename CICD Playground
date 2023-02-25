@@ -101,4 +101,4 @@ print_color "green" '-----Install Nexus Repository-----'
 cd /opt && sudo wget https://download.sonatype.com/nexus/3/nexus-3.47.1-01-unix.tar.gz
 sudo tar -zxvf nexus-3.47.1-01-unix.tar.gz && sudo rm -f nexus-3.47.1-01-unix.tar.gz
 sudo chown $USER:$USER -R nexus-3.47.1-01/ && sudo chown $USER:$USER -R sonatype-work
-/opt/nexus-3.43.0-01/bin/nexus start
+/opt/nexus-3.47.1-01/bin/nexus start
